@@ -2,19 +2,18 @@ use crate::parse_ranges;
 
 pub fn solution(input: &str) -> u64 {
     let mut invalid_id_sum = 0;
-    parse_ranges(input).for_each(|range| {
-        print!("{range:?} : ");
-        let size = ((*range.start() as f64).log10() / 2.0).ceil().max(1.0) as usize;
+    parse_ranges(input).for_each(|(start, end)| {
+        print!("{start}..={end} : ");
+        let size = ((start as f64).log10() / 2.0).ceil().max(1.0) as usize;
         print!("size:{size} ");
         // let step = 11 + 9 * (10u64.pow(size - 1));
         let step: usize = format!("1{}1", "0".repeat(size - 1)).parse().unwrap();
         print!("step:{step} ");
-        let first_invalid = range
-            .start()
+        let first_invalid = start
             .div_ceil(step as u64)
             .max(10u32.pow(size as u32 - 1) as u64)
             * step as u64;
-        let last_invalid = (((*range.end() as f64) / step as f64).floor() as u64)
+        let last_invalid = (((end as f64) / step as f64).floor() as u64)
             .min("9".repeat(size).parse().unwrap())
             * step as u64;
         print!("first:{first_invalid}, last:{last_invalid} ");
@@ -32,9 +31,9 @@ pub fn solution(input: &str) -> u64 {
 
 pub fn solution_simple(input: &str) -> u64 {
     let mut invalid_id_sum = 0;
-    parse_ranges(input).for_each(|range| {
-        let size = ((*range.start() as f64).log10() / 2.0).ceil().max(1.0) as usize;
-        for i in range {
+    parse_ranges(input).for_each(|(start, end)| {
+        let size = ((start as f64).log10() / 2.0).ceil().max(1.0) as usize;
+        for i in start..=end {
             if i.ilog10() % 2 == 0 {
                 continue;
             }
