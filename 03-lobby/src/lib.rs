@@ -24,13 +24,14 @@ pub fn largest_joltage<const L: usize>(bank: &[u8]) -> u64 {
     joltage
 }
 
-pub fn largest_joltage_zig(bank: &[u8], length: usize) -> u64 {
-    let mut joltage = String::with_capacity(length);
+pub fn largest_joltage_zig(bank: &[u8], length: u32) -> u64 {
+    let mut joltage = 0;
     let mut search_start_i = 0;
-    let search_slice_len = bank.len() - length;
+    let search_slice_len = bank.len() - length as usize;
     let mut search_end_i = search_slice_len;
 
-    while joltage.len() < length {
+    let mut joltage_len = 0;
+    while joltage_len < length {
         // dbg!(search_start_i, search_end_i);
         let (mut largest_battery_i, mut largest_battery) = (search_start_i, bank[search_start_i]);
         for i in search_start_i + 1..=search_end_i {
@@ -39,13 +40,15 @@ pub fn largest_joltage_zig(bank: &[u8], length: usize) -> u64 {
                 largest_battery = bank[i];
             }
         }
-        joltage.push(largest_battery as char);
+
+        joltage_len += 1;
+        joltage += (largest_battery - 48) as u64 * 10u64.pow(length - joltage_len);
         search_start_i = largest_battery_i + 1;
-        search_end_i = search_start_i + bank.len() - (length - joltage.len()) - search_start_i;
+        search_end_i = search_slice_len + joltage_len as usize;
         // dbg!(&joltage);
     }
 
-    joltage.parse().expect("Malformed number")
+    joltage
 }
 
 #[cfg(test)]
