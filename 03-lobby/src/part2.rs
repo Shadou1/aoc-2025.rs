@@ -6,7 +6,7 @@ pub fn solution(input: &str) -> u64 {
     for line in input.lines() {
         let bank: Vec<u8> = line.as_bytes().iter().map(|byte| byte - 48).collect();
         let largest_joltage = largest_joltage::<12>(&bank);
-        println!("Largest:\t{largest_joltage}");
+        // println!("Largest:\t{largest_joltage}");
         sum += largest_joltage;
     }
 
