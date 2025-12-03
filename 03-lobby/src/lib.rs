@@ -30,10 +30,9 @@ pub fn largest_joltage_zig(bank: &[u8], length: u32) -> u64 {
     let search_slice_len = bank.len() - length as usize;
     let mut search_end_i = search_slice_len;
 
-    let mut joltage_len = 0;
-    while joltage_len < length {
-        // dbg!(search_start_i, search_end_i);
+    for joltage_len in 0..length {
         let (mut largest_battery_i, mut largest_battery) = (search_start_i, bank[search_start_i]);
+        // find first largest battery
         for i in search_start_i + 1..=search_end_i {
             if bank[i] > largest_battery {
                 largest_battery_i = i;
@@ -41,11 +40,9 @@ pub fn largest_joltage_zig(bank: &[u8], length: u32) -> u64 {
             }
         }
 
-        joltage_len += 1;
-        joltage += (largest_battery - 48) as u64 * 10u64.pow(length - joltage_len);
+        joltage += (largest_battery - 48) as u64 * 10u64.pow(length - joltage_len - 1);
         search_start_i = largest_battery_i + 1;
-        search_end_i = search_slice_len + joltage_len as usize;
-        // dbg!(&joltage);
+        search_end_i = search_slice_len + joltage_len as usize + 1;
     }
 
     joltage
