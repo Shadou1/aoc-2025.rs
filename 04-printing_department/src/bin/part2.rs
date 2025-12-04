@@ -19,7 +19,7 @@ mod tests {
     fn test_input() {
         let input = include_str!("../../input-test-part2.txt");
         let result = part2::solution(input);
-        let expected = todo!("Expected result");
+        let expected = 43;
         assert_eq!(result, expected);
     }
 
