@@ -25,3 +25,7 @@ version = "0.1.0"
 [[package]]
 name = "template"
 version = "0.1.0"
+
+[[package]]
+name = "trash_cmpactor"
+version = "0.1.0"
