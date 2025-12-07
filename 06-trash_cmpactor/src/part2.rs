@@ -5,43 +5,41 @@ pub fn solution(input: &str) -> u64 {
         .take(lines_count - 1)
         .map(|line| line.as_bytes())
         .collect();
-    let operators_line = input.lines().nth(lines_count - 1).unwrap();
+    let operators_line = input.lines().nth(lines_count - 1).unwrap().bytes();
 
     let mut sum: u64 = 0;
-    let mut current_result = 0;
-    let mut current_operator = b' ';
-    for (i, operator) in operators_line.bytes().enumerate() {
+    let mut current_operator = b'+';
+    let mut current_number_index = 0;
+    let mut numbers: [u64; 4] = [0, 0, 0, 0];
+
+    for (i, operator) in operators_line.enumerate() {
         if operator != b' ' {
-            // println!("{current_result}");
-            sum += current_result;
-            current_operator = operator;
-            current_result = match current_operator {
-                b'*' => 1,
-                b'+' => 0,
+            sum += match current_operator {
+                b'*' => numbers.iter().map(|number| number.max(&1)).product::<u64>(),
+                b'+' => numbers.iter().sum::<u64>(),
                 _ => panic!("Unknown operator"),
             };
+            current_operator = operator;
+            current_number_index = 0;
+            numbers.fill(0);
         }
 
-        let mut current_number = 0;
         for digits in numbers_lines.iter() {
             if digits[i] == b' ' {
                 continue;
             }
-            current_number = (current_number * 10) + (digits[i] - 48) as u64;
+            numbers[current_number_index] =
+                (numbers[current_number_index] * 10) + (digits[i] - 48) as u64;
         }
-        if current_number == 0 {
-            continue
-        }
-        // println!("\t{i} : {current_number}");
-        match current_operator {
-            b'*' => current_result *= current_number,
-            b'+' => current_result += current_number,
-            _ => panic!("Unknown operator"),
-        }
+        current_number_index += 1;
     }
-    
+
     // last operation
-    sum += current_result;
+    sum += match current_operator {
+        b'*' => numbers.iter().map(|number| number.max(&1)).product::<u64>(),
+        b'+' => numbers.iter().sum::<u64>(),
+        _ => panic!("Unknown operator"),
+    };
 
     sum
 }

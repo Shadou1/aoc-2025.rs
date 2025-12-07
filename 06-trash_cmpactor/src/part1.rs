@@ -1,31 +1,43 @@
 use std::iter;
 
 pub fn solution(input: &str) -> u64 {
-    let numbers_count = input.lines().count() - 1;
-    let problems_count = input.lines().next().unwrap().split_whitespace().count();
-
-    let mut numbers: Vec<Vec<u64>> =
-        iter::repeat_n(Vec::with_capacity(numbers_count - 1), problems_count).collect();
-    for (i, number) in input.lines().take(numbers_count).flat_map(|line| {
-        line.split_whitespace()
-            .map(|number| number.parse::<u64>().unwrap())
-            .enumerate()
-    }) {
-        numbers[i].push(number);
-    }
+    let lines_count = input.lines().count();
+    let numbers_lines: Vec<&[u8]> = input
+        .lines()
+        .take(lines_count - 1)
+        .map(|line| line.as_bytes())
+        .collect();
+    let operators_line = input.lines().nth(lines_count - 1).unwrap().bytes();
 
     let mut sum: u64 = 0;
-    for operator in input.lines().nth(numbers_count).unwrap().split_whitespace() {
-        sum += numbers
-            .remove(0)
-            .into_iter()
-            .reduce(|number1, number2| match operator {
-                "+" => number1 + number2,
-                "*" => number1 * number2,
+    let mut current_operator = b'+';
+    let mut numbers: [u64; 4] = [0, 0, 0, 0];
+
+    for (i, operator) in operators_line.enumerate() {
+        if operator != b' ' {
+            sum += match current_operator {
+                b'*' => numbers.iter().map(|number| number.max(&1)).product::<u64>(),
+                b'+' => numbers.iter().sum::<u64>(),
                 _ => panic!("Unknown operator"),
-            })
-            .unwrap();
+            };
+            current_operator = operator;
+            numbers.fill(0);
+        }
+
+        for (n, digits) in numbers_lines.iter().enumerate() {
+            if digits[i] == b' ' {
+                continue;
+            }
+            numbers[n] = (numbers[n] * 10) + (digits[i] - 48) as u64;
+        }
     }
+
+    // last operation
+    sum += match current_operator {
+        b'*' => numbers.iter().map(|number| number.max(&1)).product::<u64>(),
+        b'+' => numbers.iter().sum::<u64>(),
+        _ => panic!("Unknown operator"),
+    };
 
     sum
 }
