@@ -1,27 +1,20 @@
-use std::collections::{HashMap, HashSet};
+use std::{cmp::Reverse, collections::{BinaryHeap, HashMap, HashSet}};
 
-use crate::parse_junction_boxes;
+use crate::{BoxDistance, DisjointSet, get_sorted_distances, get_sorted_distances_binary_heap, parse_junction_boxes};
 
-pub fn solution(input: &str, connections: usize) -> u64 {
-    let boxes = parse_junction_boxes(input);
-    let mut distances: Vec<((usize, usize), f64)> = Vec::with_capacity(boxes.len().pow(2));
-
-    for box1_i in 0..boxes.len() {
-        for box2_i in box1_i + 1..boxes.len() {
-            distances.push(((box1_i, box2_i), boxes[box1_i].distnace(&boxes[box2_i])));
-        }
-    }
-
-    distances.sort_by(|d1, d2| d1.1.total_cmp(&d2.1));
-
-    let mut circuits: Vec<Vec<usize>> = vec![Vec::with_capacity(10)];
+pub fn connect_boxes_map_box_to_circuit(
+    distances: &Vec<((usize, usize), u64)>,
+    boxes_count: usize,
+    connections_count: usize,
+) -> u64 {
+    let mut circuits: Vec<Vec<usize>> = vec![Vec::with_capacity(boxes_count / 2)];
     circuits[0].push(distances[0].0.0);
     circuits[0].push(distances[0].0.1);
     let mut box_to_circuit: HashMap<usize, usize> = HashMap::with_capacity(1000);
     box_to_circuit.insert(distances[0].0.0, 0);
     box_to_circuit.insert(distances[0].0.1, 0);
 
-    for &((box1_i, box2_i), distance) in &distances[1..connections] {
+    for &((box1_i, box2_i), _) in &distances[1..connections_count] {
         // print!("\nBoxes {box1_i} : {box2_i}\t");
         let circuit1_i = box_to_circuit.get(&box1_i);
         let circuit2_i = box_to_circuit.get(&box2_i);
@@ -80,6 +73,63 @@ pub fn solution(input: &str, connections: usize) -> u64 {
         .map(|circuit| circuit.len())
         .take(3)
         .product::<usize>() as u64
+}
+
+pub fn solution(input: &str, connections: usize) -> u64 {
+    let boxes = parse_junction_boxes(input);
+    let boxes_len = boxes.len();
+    let distances = get_sorted_distances(boxes);
+
+    connect_boxes_map_box_to_circuit(&distances, boxes_len, connections)
+}
+
+pub fn connect_boxes_disjoint_set(
+    distances: &Vec<((usize, usize), u64)>,
+    boxes_count: usize,
+    connections_count: usize,
+) -> u64 {
+    let mut circuits = DisjointSet::new(boxes_count);
+    for &((box1_i, box2_i), _) in &distances[..connections_count] {
+        circuits.union(box1_i, box2_i);
+    }
+    // println!("Parents: {:?}", circuits.parent);
+    // println!("Sizes: {:?}", circuits.sizes);
+    circuits.sizes.sort();
+    circuits.sizes.reverse();
+    circuits.sizes.into_iter().take(3).product::<usize>() as u64
+}
+
+pub fn solution_disjoint_set(input: &str, connections: usize) -> u64 {
+    let boxes = parse_junction_boxes(input);
+    let boxes_len = boxes.len();
+    let distances = get_sorted_distances(boxes);
+
+    connect_boxes_disjoint_set(&distances, boxes_len, connections)
+}
+
+pub fn connect_boxes_disjoint_set_binary_heap(
+    mut distances: BinaryHeap<Reverse<BoxDistance>>,
+    boxes_count: usize,
+    connections_count: usize,
+) -> u64 {
+    let mut circuits = DisjointSet::new(boxes_count);
+    for _ in 0..connections_count {
+        let BoxDistance {box1_i, box2_i, ..} = distances.pop().unwrap().0;
+        circuits.union(box1_i, box2_i);
+    }
+    // println!("Parents: {:?}", circuits.parent);
+    // println!("Sizes: {:?}", circuits.sizes);
+    circuits.sizes.sort();
+    circuits.sizes.reverse();
+    circuits.sizes.into_iter().take(3).product::<usize>() as u64
+}
+
+pub fn solution_disjoint_set_binary_heap(input: &str, connections: usize) -> u64 {
+    let boxes = parse_junction_boxes(input);
+    let boxes_len = boxes.len();
+    let distances = get_sorted_distances_binary_heap(boxes);
+
+    connect_boxes_disjoint_set_binary_heap(distances, boxes_len, connections)
 }
 
 #[cfg(test)]

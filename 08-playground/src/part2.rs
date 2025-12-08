@@ -4,15 +4,15 @@ use crate::parse_junction_boxes;
 
 pub fn solution(input: &str) -> u64 {
     let boxes = parse_junction_boxes(input);
-    let mut distances: Vec<((usize, usize), f64)> = Vec::with_capacity(boxes.len().pow(2));
+    let mut distances: Vec<((usize, usize), u64)> = Vec::with_capacity(boxes.len().pow(2));
 
     for box1_i in 0..boxes.len() {
         for box2_i in box1_i + 1..boxes.len() {
-            distances.push(((box1_i, box2_i), boxes[box1_i].distnace(&boxes[box2_i])));
+            distances.push(((box1_i, box2_i), boxes[box1_i].distnace_squared(&boxes[box2_i])));
         }
     }
 
-    distances.sort_by(|d1, d2| d1.1.total_cmp(&d2.1));
+    distances.sort_by(|d1, d2| d1.1.cmp(&d2.1));
 
     let mut circuits: Vec<Vec<usize>> = vec![Vec::with_capacity(10)];
     circuits[0].push(distances[0].0.0);
@@ -21,7 +21,7 @@ pub fn solution(input: &str) -> u64 {
     box_to_circuit.insert(distances[0].0.0, 0);
     box_to_circuit.insert(distances[0].0.1, 0);
 
-    for &((box1_i, box2_i), distance) in &distances[1..] {
+    for &((box1_i, box2_i), _) in &distances[1..] {
         // print!("\nBoxes {box1_i} : {box2_i}\t");
         let circuit1_i = box_to_circuit.get(&box1_i);
         let circuit2_i = box_to_circuit.get(&box2_i);
