@@ -26,6 +26,9 @@ pub fn solution(input: &str, connections: usize) -> u64 {
             } else if circuit.contains(box2_i) {
                 circuit2_i = Some(circuit_i);
             }
+            if circuit1_i.is_some() && circuit2_i.is_some() {
+                break;
+            }
         }
 
         match (circuit1_i, circuit2_i) {
