@@ -1,6 +1,6 @@
 use std::{
     cmp::{Ordering, Reverse},
-    collections::{BinaryHeap, HashSet},
+    collections::BinaryHeap,
 };
 
 pub mod part1;
@@ -57,20 +57,6 @@ pub fn parse_junction_boxes(input: &str) -> Vec<JunctionBox> {
         .collect()
 }
 
-pub fn get_sorted_distances(boxes: Vec<JunctionBox>) -> Vec<((usize, usize), u64)> {
-    let mut distances: Vec<((usize, usize), u64)> = Vec::with_capacity(boxes.len().pow(2));
-
-    for box1_i in 0..boxes.len() {
-        for box2_i in box1_i + 1..boxes.len() {
-            let distance = boxes[box1_i].distnace_squared(&boxes[box2_i]);
-            distances.push(((box1_i, box2_i), distance));
-        }
-    }
-
-    distances.sort_unstable_by_key(|d| d.1);
-    distances
-}
-
 #[derive(PartialEq, Eq)]
 pub struct BoxDistance {
     distance: u64,
@@ -90,7 +76,25 @@ impl PartialOrd for BoxDistance {
     }
 }
 
-pub fn get_sorted_distances_binary_heap(boxes: Vec<JunctionBox>) -> BinaryHeap<Reverse<BoxDistance>> {
+pub fn get_sorted_distances(boxes: &[JunctionBox]) -> Vec<BoxDistance> {
+    let mut distances = Vec::with_capacity(boxes.len().pow(2));
+
+    for box1_i in 0..boxes.len() {
+        for box2_i in box1_i + 1..boxes.len() {
+            let distance = boxes[box1_i].distnace_squared(&boxes[box2_i]);
+            distances.push(BoxDistance {
+                distance,
+                box1_i,
+                box2_i,
+            });
+        }
+    }
+
+    distances.sort_unstable();
+    distances
+}
+
+pub fn get_sorted_distances_binary_heap(boxes: &[JunctionBox]) -> BinaryHeap<Reverse<BoxDistance>> {
     let mut distances: BinaryHeap<Reverse<BoxDistance>> = BinaryHeap::with_capacity(boxes.len().pow(2));
 
     for box1_i in 0..boxes.len() {
