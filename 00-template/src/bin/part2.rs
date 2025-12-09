@@ -6,7 +6,9 @@ use template::part2;
 
 fn main() {
     let input = include_str!("../../input.txt");
+    let expected_result = 0;
     let result = part2::solution(input);
+    assert!(expected_result == 0 || result == expected_result);
     println!("{result:?}");
 }
 
