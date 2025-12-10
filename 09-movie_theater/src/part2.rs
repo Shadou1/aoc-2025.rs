@@ -17,17 +17,17 @@ pub fn get_biggest_rectangle_area_without_lines_inside(
     lines: &[Line],
 ) -> u64 {
     'outer: while let Some(rectangle) = rectangles.pop() {
-        // println!("{}", rectangle.0);
+        // println!("{}", rectangle);
         for line in lines {
             // println!("\t{}", line);
-            if line.is_inside(&rectangle) {
+            if line.is_crossing_rectangle(&rectangle) {
                 // println!("\tFound line inside");
                 continue 'outer;
             }
         }
-        // Found biggest rectangle without any lines inside
+        // Found biggest rectangle without any crossing lines
         // println!("Found biggest area");
-        // println!("{}", rectangle.0);
+        // println!("{}", rectangle);
         return rectangle.area();
     }
 

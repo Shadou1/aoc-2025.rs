@@ -16,20 +16,6 @@ impl Point {
     pub fn area(&self, other: &Self) -> u64 {
         (self.x.abs_diff(other.x) + 1) * (self.y.abs_diff(other.y) + 1)
     }
-
-    // pub fn is_inside(&self, rectangle: &Rectangle) -> bool {
-    //     let x_inside = match rectangle.point1.x as i64 - rectangle.point2.x as i64 {
-    //         (..=-1) => self.x > rectangle.point1.x && self.x < rectangle.point2.x,
-    //         (1..) => self.x > rectangle.point2.x && self.x < rectangle.point1.x,
-    //         0 => panic!("rectangle is on the same y axis"),
-    //     };
-    //     let y_inside = match rectangle.point1.y as i64 - rectangle.point2.y as i64 {
-    //         (..=-1) => self.y > rectangle.point1.y && self.y < rectangle.point2.y,
-    //         (1..) => self.y > rectangle.point2.y && self.y < rectangle.point1.y,
-    //         0 => panic!("rectangle is on the same x ayis"),
-    //     };
-    //     x_inside && y_inside
-    // }
 }
 
 impl Display for Point {
@@ -148,8 +134,8 @@ impl Line {
         }
     }
 
-    pub fn is_inside(&self, rectangle: &Rectangle) -> bool {
-        // Arrange rectangle points from left to right, up to down
+    pub fn is_crossing_rectangle(&self, rectangle: &Rectangle) -> bool {
+        // Arrange rectangle points for calculating a crossing vertical line
         let (mut rectangle_x1, mut rectangle_x2) = match rectangle.point1.x as i64 - rectangle.point2.x as i64 {
             (..=-1) => (rectangle.point1.x, rectangle.point2.x),
             (1..) => (rectangle.point2.x, rectangle.point1.x),
@@ -163,69 +149,19 @@ impl Line {
 
         if self.point1.x == self.point2.x {
             // Vertical line
-            // let (rectangle_point1, rectangle_point2) = match rectangle.point1.x as i64 - rectangle.point2.x as i64 {
-            //     (..=-1) => (rectangle.point1, rectangle.point2),
-            //     (1..) => (rectangle.point2, rectangle.point1),
-            //     0 => panic!("rectangle is on the same y axis"),
-            // };
-            // let inside_x = match rectangle.point1.x as i64 - rectangle.point2.x as i64 {
-            //     (..=-1) => self.point1.x > rectangle.point1.x && self.point1.x < rectangle.point2.x,
-            //     (1..) => self.point1.x < rectangle.point1.x && self.point1.x > rectangle.point2.x,
-            //     0 => panic!("rectangle is on the same y axis"),
-            // };
-            // let (rectangle_point1, rectangle_point2) = match rectangle.point1.y as i64 - rectangle.point2.y as i64 {
-            //     (..=-1) => (rectangle.point2, rectangle.point1),
-            //     (1..) => (rectangle.point1, rectangle.point2),
-            //     0 => panic!("rectangle is on the same x axis"),
-            // };
-            // let inside_y = match rectangle.point1.y as i64 - rectangle.point2.y as i64 {
-            //     (..=-1) => {
-            //         self.point1.y < rectangle.point2.y && self.point2.y > rectangle.point1.y
-            //         // (self.point1.y >= rectangle.point1.y && self.point1.y <= rectangle.point2.y)
-            //         //     || (self.point2.y >= rectangle.point1.y
-            //         //         && self.point2.y <= rectangle.point2.y)
-            //     }
-            //     (1..) => {
-            //         self.point1.y < rectangle.point1.y && self.point2.y > rectangle.point2.y
-            //         // (self.point1.y <= rectangle.point1.y && self.point1.y >= rectangle.point2.y)
-            //         //     || (self.point2.y <= rectangle.point1.y
-            //         //         && self.point2.y >= rectangle.point2.y)
-            //     }
-            //     0 => panic!("rectangle is on the same x axis"),
-            // };
             let inside_x = self.point1.x > rectangle_x1 && self.point1.x < rectangle_x2;
-            let inside_y = self.point1.y < rectangle_y1 && self.point2.y > rectangle_y2;
-            // println!("\tinside_x: {inside_x}, inside_y: {inside_or_on_edge_y}");
-            inside_x && inside_y
+            let crosses_y = self.point1.y < rectangle_y1 && self.point2.y > rectangle_y2;
+            // println!("\tinside_x: {inside_x}, crosses_y: {crosses_y}");
+            inside_x && crosses_y
         } else {
             // Horizontal line
-            // let inside_y = match rectangle.point1.y as i64 - rectangle.point2.y as i64 {
-            //     (..=-1) => self.point1.y > rectangle.point1.y && self.point1.y < rectangle.point2.y,
-            //     (1..) => self.point1.y < rectangle.point1.y && self.point1.y > rectangle.point2.y,
-            //     0 => panic!("rectangle is on the same x axis"),
-            // };
-            // let inside__x = match rectangle.point1.x as i64 - rectangle.point2.x as i64 {
-            //     (..=-1) => {
-            //         self.point1.x < rectangle.point2.x && self.point2.x > rectangle.point1.x
-            //         // (self.point1.x >= rectangle.point1.x && self.point1.x <= rectangle.point2.x)
-            //         //     || (self.point2.x >= rectangle.point1.x
-            //         //         && self.point2.x <= rectangle.point2.x)
-            //     }
-            //     (1..) => {
-            //         self.point1.x < rectangle.point1.x && self.point2.x > rectangle.point2.x
-            //         // (self.point1.x <= rectangle.point1.x && self.point1.x >= rectangle.point2.x)
-            //         //     || (self.point2.x <= rectangle.point1.x
-            //         //         && self.point2.x >= rectangle.point2.x)
-            //     }
-            //     0 => panic!("rectangle is on the same y axis"),
-            // };
             // Swap points because line is now horizontal
             (rectangle_x1, rectangle_x2) = (rectangle_x2, rectangle_x1);
             (rectangle_y1, rectangle_y2) = (rectangle_y2, rectangle_y1);
             let inside_y = self.point1.y > rectangle_y1 && self.point1.y < rectangle_y2;
-            let inside_x = self.point1.x < rectangle_x1 && self.point2.x > rectangle_x2;
-            // println!("\tinside_x: {inside_or_on_edge_x}, inside_y: {inside_y}");
-            inside_y && inside_x
+            let crosses_x = self.point1.x < rectangle_x1 && self.point2.x > rectangle_x2;
+            // println!("\tinside_y: {inside_y}, crosses_x: {crosses_x}");
+            inside_y && crosses_x
         }
     }
 }
