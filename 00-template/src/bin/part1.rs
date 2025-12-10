@@ -6,10 +6,10 @@ use template::part1;
 
 fn main() {
     let input = include_str!("../../input.txt");
-    let expected_result = 0;
     let result = part1::solution(input);
-    assert!(expected_result == 0 || result == expected_result);
     println!("{result:?}");
+    let expected = 0;
+    assert!(expected == 0 || result == expected);
 }
 
 #[cfg(test)]
@@ -26,7 +26,7 @@ mod tests {
     }
 
     #[bench]
-    fn bench_input(b: &mut Bencher) {
+    fn bench_solution(b: &mut Bencher) {
         let input = include_str!("../../input.txt");
         b.iter(|| part1::solution(input));
     }
