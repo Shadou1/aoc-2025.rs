@@ -7,9 +7,9 @@ use movie_theater::part2;
 fn main() {
     let input = include_str!("../../input.txt");
     let result = part2::solution(input);
-    let expected = 0;
-    assert!(expected == 0 || result == expected);
     println!("{result:?}");
+    let expected = 1542119040;
+    assert!(expected == 0 || result == expected);
 }
 
 #[cfg(test)]
@@ -26,7 +26,7 @@ mod tests {
     }
 
     #[bench]
-    fn bench_input(b: &mut Bencher) {
+    fn bench_solution(b: &mut Bencher) {
         let input = include_str!("../../input.txt");
         b.iter(|| part2::solution(input));
     }

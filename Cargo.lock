@@ -19,6 +19,10 @@ name = "lobby"
 version = "0.1.0"
 
 [[package]]
+name = "movie_theater"
+version = "0.1.0"
+
+[[package]]
 name = "playground"
 version = "0.1.0"
 

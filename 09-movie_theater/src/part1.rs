@@ -15,5 +15,4 @@ pub fn get_largest_area(areas: &BinaryHeap<u64>) -> u64 {
 #[cfg(test)]
 mod tests {
     use super::*;
-
 }
