@@ -1,11 +1,11 @@
 use itertools::Itertools;
 
-use crate::{BitFlag, Machine, parse_machines};
+use crate::{BitFlag, LightMachine, parse_light_machines};
 
 pub fn solution(input: &str) -> u64 {
     let mut sum = 0;
-    let machines = parse_machines(input);
-    'outer: for Machine { target, buttons } in machines {
+    let machines = parse_light_machines(input);
+    'outer: for LightMachine { target, buttons } in machines {
         for i in 1..=buttons.len() {
             for buttons in buttons.iter().combinations(i) {
                 let result = buttons.iter().fold(BitFlag(0), |acc, &&flag| acc ^ flag);

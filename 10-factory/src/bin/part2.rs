@@ -21,8 +21,14 @@ mod tests {
     fn test_input() {
         let input = include_str!("../../input-test-part2.txt");
         let result = part2::solution(input);
-        let expected = todo!("Expected result");
+        let expected = 33;
         assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_actual() {
+        let input = include_str!("../../input-test.txt");
+        let result = part2::solution(input);
     }
 
     #[bench]
