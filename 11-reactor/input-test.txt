@@ -1,0 +1,15 @@
+you: aaa bbb ccc
+aaa: yyy
+yyy: zzz
+zzz: out
+bbb: bbc
+bbc: bbd
+bbd: bbe
+bbe: aaa ddd
+ddd: zzz
+ccc: ccd
+ccd: cce
+cce: ccf
+ccf: ccg
+ccg: cch
+cch: bbb
