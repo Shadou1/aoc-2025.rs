@@ -15,7 +15,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use reactor::{dfs, parse_devices_vec};
+    use reactor::{DAC, FFT, OUT, SVR, dfs, parse_devices_vec};
     use test::Bencher;
 
     #[test]
@@ -33,14 +33,14 @@ mod tests {
     }
 
     #[bench]
-    fn bench_solution_dfs_only(b: &mut Bencher) {
+    fn bench_only_solution_dfs(b: &mut Bencher) {
         let input = include_str!("../../input.txt");
         let outputs = parse_devices_vec(input);
         b.iter(|| {
             let mut counts = vec![u64::MAX; 26_usize.pow(3)];
-            dfs(&outputs, &mut counts, part2::SVR, part2::FFT);
-            dfs(&outputs, &mut counts, part2::FFT, part2::DAC);
-            dfs(&outputs, &mut counts, part2::DAC, part2::OUT);
+            dfs(&outputs, &mut counts, SVR, FFT);
+            dfs(&outputs, &mut counts, FFT, DAC);
+            dfs(&outputs, &mut counts, DAC, OUT);
         });
     }
 }
